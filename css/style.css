@@ -1,0 +1,5 @@
+.hidden {
+    display: none;
+}
+
+/* user가 이름을 제출한 뒤에 사라지게 만들기 위해 class를 하나 만들어둠 */

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <script defer src="js/Greeting.js"></script>
+    <script defer src="js/clock.js"></script>
+    <script defer src="js/quote.js"></script>
+    <script defer src="js/background.js"></script>
+    <title>Momentum App</title>
+</head>
+<body>
+    <form class="login_form hidden">
+        <!--12. 11번 작업을 위해 모든 form을 숨겨주려고 hidden class 추가 -->
+        <input 
+        required  
+        maxlength="15"  
+        type="text" 
+        placeholder="What is your name?">
+        <button>Log In</button>
+        <!-- 1. 상기와 같이 form안에 input이나 button을 넣으면 html은 자동으로 input안에 있는 내용을 enter나 button 클릭시 submit을 하고 새로고침을 해버림. 
+        다만 새로고침을 하면 내용이 사라져버림. 저장을 하기위해서 JS로 작업 ㄱㄱ 
+    
+        2. 만약 input안에 required 내용을 넣고 동작하게 하고싶다면 반드시 input이나 button은 form 태그 안에 들어있어야함. 이건 HTML의 기본 요소 -->
+    </form>
+    <h2 id="clock">00:00:00</h2>
+    <!-- clock을 만들기 위해 h2생성 -->
+    <h1 id="greeting" class="hidden"></h1>
+    <div id="quote">
+        <span></span>
+        <span></span>
+    </div>
+    <!-- quotes를 만들기위해 div 생성-->
+</body>
+</html>
