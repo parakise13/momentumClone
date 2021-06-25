@@ -4,16 +4,24 @@ const toDoInput = toDoForm.querySelector('input');
 동일한 방식으로는 const toDoInput = document.querySelector('#todo-form input')👆*/
 const toDoList = document.querySelector('#todo-list');
 /* 1. todo list를 만들기위해 html에서만든 form과 ul을 가져옴 */
-const toDos = [];
+const TODOS_KEY = 'todos';
+/* 24. 23번에 todos가 또 들어가고 20번에서도 이미 사용한 것이라 변수로 선언해쥼!👆 */
+
+//const toDos = [];
 /* 18. localStorage에 toDo를 저장하기 위해 array를 만듦 👆*/
+let toDos = [];
+/* 27. 26번까지의 문제점을 해결하기 위해서 toDos array를 수정해줌. 
+빈 값으로 시작하는 대신에 const를 let으로 바꿔서 업데이트가 가능하도록 만들고 28번으로 이동👆 */
 
 function saveTodos() {
-    localStorage.setItem('todos', JSON.stringify(toDos));
+    /*localStorage.setItem('todos', JSON.stringify(toDos));
+    25. 24번에서 변수로 선언한 것으로 바꾸어줌 👇*/
+    localStorage.setItem(TODOS_KEY, JSON.stringify(toDos));
 }
 /* 20. 18&19번에서 만든 array를 localStorage에 추가하기위한 함수생성👆
 참고로 localStorage에는 array를 넣을수없음. 그래서 이렇게 localStorage에 저장해도 array의 형태가 아니라 단지 text의 형태로 저장됨
 22. 그래서 두번째인자의 toDos를 JSON.stringify()를 이용해서 string으로 만들어줌
-이렇게하면 string의 형태가 되어 localStorage에도 array로 저장됨 
+이렇게하면 string의 형태가 되어 localStorage에도 string으로 저장됨 
 JSON.stringify(): 어떤 형태든 무조건 string의 형태로 바꾸어줌 */
 
 function deleteToDo(event) {
@@ -69,3 +77,31 @@ function handleTodoSubmit(event) {
 toDoForm.addEventListener('submit', handleTodoSubmit);
 /* 2. greeting에서 했던 것과 비슷한 것을 할것임. submit의 새로고침을 preventDefault를 이용해서 막는것. 
 다시 말하지만 handleTodoSubmit에 event를 인자로 넣어주면 JS는 방금 발생한 event를 첫번째 인자로 준다.👆*/
+
+
+
+const savedTodos = localStorage.getItem(TODOS_KEY);
+/* 23. 위의 모~~든것이 다 된 후에 실행하기위해 마지막 줄에 작성...
+우리가 22번에서 string으로 변경해서 localStorage에 저장했던 string들을 살아있는 array로 바꾸기 위해서 JSON.parse()를 사용해서 item을 가져와야함. 그러기 위해 일단 todos를 가져온다 👆 */
+
+if (savedTodos !== null) {
+    const parsedToDos = JSON.parse(savedTodos);
+    /* 25. todo에 아무것도 없을때는 null이 되는데 localStroage가 존재할때만(즉 null이 아닐때만) 23번에서 가져온 Todo들을 parse를 이용해 JS object로 변하게 하는것.👆 
+    JS object인 array로 변경한 이유는 array로 변경하는 순간 우리는 그것을 가지고 function을 실행하는 등 무언가를 할 수 있게 됨 (중요!)*/
+    
+    toDos = parsedToDos;
+    /* 28. localStorage에 toDo들이 있으면 toDos에 paresdToDos를 넣어서 전에 있던 todo들을 복원할 것👆 이렇게 toDos에 paresedToDos를 넣어주면 새로고침을 해도 이전의 to do 들을 가져오기 때문에 저장됨. 
+    
+    그리고 또 문제가 있음.... 여기까지하면 저장은 하지만 내가 todo를 삭제버튼으로 삭제해도 localStorage에 남아 있음! 이제 그것을 지워줄 것임  */
+    
+    parsedToDos.forEach(paintToDo);
+    /* 26. array로 만든 후 그 array 각각의 item에 대해 무언가 실행하기 위해 forEach를 사용하여 function을 실행시킴👆 savedTodos가 array가 아니라 단지 string이었다면 forEach를 사용할 수 없음.
+    forEach() 괄호 안에 arrow function을 만들어서 넣어도 되고 따로 함수를 생성해서 넣어도됨.
+    지금의 경우에는 따로 함수를 생성할 필요없이 우리가 8번에서 만들었던 paintToDo 함수를 실행시켜 주면됨. 왜냐면 우리가 원하는게 그것을 실행시키는 것이니까!
+    (새로 고침을 해도 paintToDo해서 todo들이 지워지지않고 화면에 보이게 하기위함)
+    
+    26번까지의 문제점이 있음. 
+    => 새로고침을 하면 이전의 todo들이 지워지지않는데 localStorage에는 새로고침 이전의 todo들은 지워지고 새로 입력한 todo들만 저장이 되어있음. 이렇게 되는 이유는 18번에서 만든 todos array는 항상 시작이 비어있는 array이기 때문임.
+    
+    그래서 이 다음에 해야하는 것이 이전의 todo와 새로운 todo들을 모두 유지하는 것임*/
+}
