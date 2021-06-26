@@ -30,14 +30,27 @@ function deleteToDo(event) {
     이제 여기서 버튼을 누르면 여러개의 li가 생성됐을때 어떤 li의 btn을 누르는지 확인하고 그것만 지워줘야함. 그 버튼의 부모를 찾는 방식으로 어떤 x가 클릭 되었는지 알 수 있음 👆*/
     li.remove();
     /* 17. 위에서 그 부모를 찾아서 그 부모를 지워줌 👆*/
+    
+    //toDos = todos.filter(toDo => toDo.id !== li.id);
+    /* 34. filter를 이용해서 우리가 지우려고 x를 클릭했던 li의 id를 갖고 있는 todo를 지움
+    참고로 filter는 무조건 true를 반환해야 array에 남겨두고 새로운 array를 만들어줌. 기존의 array를 수정하는 것이 아님. 즉 위의 식을 보면 toDo list의 id 중에서 내가 클릭한 li의 id와 다른 것을 남겨서 array로 만드는 것(클릭하지 않은 li의 id는 array에 남긴다)👆*/
+    
+    toDos = toDos.filter(toDo => toDo.id !== parseInt(li.id));
+    /* 35. but!!!! 여기서 중요한건 상기처럼 작성해도 아무것도 지워지지않음. 왜냐면 toDo.id는 숫자고 li.id는 string이기 때문. parseInt로 문자열을 숫자로 바꿔줘야함.  👆*/
+    saveTodos();
+    /* 36. 35번과 같이 filter로 지워주고 저장된 saveTodos는 다시 호출해줌👆*/
 }
 
 function paintToDo(newTodo) {
     const li = document.createElement('li');
+    li.id = newTodo.id;
+    /* 33. li의 id는 newTodo의 id로 지정👆*/
     const span = document.createElement('span');
     /* 8. 이 함수에서는 ul(list)에 추가할 내용을 만들어서 html로 보내서 출력할 것이고 그냥 list를 만드는 것이 아니라 span과 함께 만들 것임. 왜냐면 나중에 삭제하는 button을 넣어 줄 것이기 때문에 👆*/
-    span.innerText = newTodo;
+    span.innerText = newTodo.text;
+    //span.innerText = newTodo;
     /* 10. span의 innerText로 newTodo를 넣어줌. 그러면 span의 text는 handleToDoSubmit에서 온 newTodo가 되는 것 👆*/
+    /* 32. 우리가 만든 obj를 보면 obj는 text와 id를 가지고 있음. 즉, span.innerText는 newTodo가 아니라 newTodo의 text가 되어야 하는것임 👆*/
     const button = document.createElement('button');
     /* 12. 생성한 todo list를 삭제할 수 있게 하기 위해서 button을 생성해줌. 👆*/
     button.innerText = '❌';
@@ -64,11 +77,23 @@ function handleTodoSubmit(event) {
     이렇게 하면 값이 지워지지 않는 이유는 js가 input의 value를 새로운 변수를 만들어서 거기에 복사하기 때문임 */
     toDoInput.value = '';
     /* 4. 3번에서 가져온 값을 enter를 치면 사라지게 만들기 위해서 value에 빈 값 ("")을 넣어줌 👆*/
-    toDos.push(newTodo);
+    const newTodoObj = {
+        text: newTodo,
+        id: Date.now();
+    }
+    /* 29. 28번에서 언급한 문제점들을 해결하기 위해서 toDos에 그냥 text를 push하는 것이 아니라 obj를 push하기 위해 obj 생성
+    참고로 Date.now()는 현재 시간을 초(ms)단위로 나타내주는 것인데 이것이 todo를 저장한 시간을 초 단위로 표현해주고 그것을 id로 줄것임. id를 만들어준 이유는 각각의 li item을 구별하기 위함👆*/
+    toDos.push(newTodoObj);
+    //toDos.push(newTodo);
     /* 19. 18번에서 만든 array에 newTodo가 생길때마다 push로 추가해줌 👆*/
-    paintToDo(newTodo);
+    /* 30. 29번에서 생성한 obj를 기존의 newTodo를 push하던 array에 넣어줌. 
+    이렇게 하면 array에는 text로 todo가 id로는 text를 submit한 시간을 나타내줌 👆*/
+    paintToDo(newTodoObj);
+    //paintToDo(newTodo);
     /* 7. 위에서 만든 paintToDo 함수 넣어줌 
     위에서 변수로 지정한 newTodo는 input의 value를 비우기 전의 값을 나타내는 string이고 그 입력된 값을 paintTodo에 넣어서 호출하는 것! */
+    /* 31. 30번과 마찬가지고 paintToDo에도 text가 아닌 obj를 넣어줌👆
+    다만 이렇게 하면 input에 todo를 입력했을때 object가 나옴 그래서 paintToDo함수를 수정해야함*/
     saveTodos();
     /* 21. 20번에서 생성한 함수를 실행👆*/
 }
@@ -92,7 +117,7 @@ if (savedTodos !== null) {
     toDos = parsedToDos;
     /* 28. localStorage에 toDo들이 있으면 toDos에 paresdToDos를 넣어서 전에 있던 todo들을 복원할 것👆 이렇게 toDos에 paresedToDos를 넣어주면 새로고침을 해도 이전의 to do 들을 가져오기 때문에 저장됨. 
     
-    그리고 또 문제가 있음.... 여기까지하면 저장은 하지만 내가 todo를 삭제버튼으로 삭제해도 localStorage에 남아 있음! 이제 그것을 지워줄 것임  */
+    그리고 또 문제가 있음.... 여기까지하면 저장은 하지만 내가 todo를 삭제버튼으로 삭제해도 localStorage에 남아 있게 되고 만약 같은 이름의 todo가 2개 있다면 그중에 하나를 지워도 console에서 확인했을떄 내가 어떤 todo를 지운건지 알 수 없음. 그래서 id를 부여할 것임 */
     
     parsedToDos.forEach(paintToDo);
     /* 26. array로 만든 후 그 array 각각의 item에 대해 무언가 실행하기 위해 forEach를 사용하여 function을 실행시킴👆 savedTodos가 array가 아니라 단지 string이었다면 forEach를 사용할 수 없음.
